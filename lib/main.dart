@@ -32,37 +32,62 @@ class _QuizPageState extends State<QuizPage> {
   List<Icon> scorekeeper = [];
   int total = 0;
   int queTracker = 0;
+  bool correct = false;
 
   //The following initializes a Quizbrain Object
   Quizbrain quizzes = Quizbrain();
 
-  void checkAnswer(bool userPickedAnswer) {
-    bool correctAnswer = quizzes.getQuestionAnswer();
-    if (queTracker <= 3) {
-      if (correctAnswer == userPickedAnswer) {
-        setState(() {
-          total++;
-          scorekeeper.add(Icon(
-            Icons.check,
-            color: Colors.lightBlue,
-          ));
-        });
-      } else {
-        setState(() {
-          scorekeeper.add(Icon(
-            Icons.close,
-            color: Colors.red,
-          ));
-        });
-      }
-    } else {
-      // Trigger Alert Box
-      quizzes.nextQuestion(context);
+  // Method to change state according to answer
+  void updateUI(bool myAnswer){
+    bool feedBack = quizzes.checkAnswer(myAnswer);
+    if (feedBack){
+      setState(() {
+        total++;
+        scorekeeper.add(Icon(
+          Icons.check,
+          color: Colors.lightBlue,
+        ));
+      });
+    }else{
+      setState(() {
+        scorekeeper.add(Icon(
+          Icons.close,
+          color: Colors.red,
+        ));
+      });
     }
 
-    quizzes.nextQuestion(context);
-    queTracker++;
+    quizzes.nextQuestion(context, total);
   }
+
+  // void checkAnswer(bool userPickedAnswer) {
+  //   bool correctAnswer = quizzes.getQuestionAnswer();
+  //   if (queTracker <= 3) {
+  //     if (correctAnswer == userPickedAnswer) {
+  //       setState(() {
+  //         total++;
+  //
+  //         scorekeeper.add(Icon(
+  //           Icons.check,
+  //           color: Colors.lightBlue,
+  //         ));
+  //       });
+  //     } else {
+  //       setState(() {
+  //         scorekeeper.add(Icon(
+  //           Icons.close,
+  //           color: Colors.red,
+  //         ));
+  //       });
+  //     }
+  //   } else {
+  //     // Trigger Alert Box
+  //     quizzes.nextQuestion(context);
+  //   }
+  //
+  //   quizzes.nextQuestion(context);
+  //   queTracker++;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +125,8 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                checkAnswer(true);
+              updateUI(true);
+
 
               },
             ),
@@ -119,7 +145,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                checkAnswer(false);
+               updateUI(false);
               },
             ),
           ),
