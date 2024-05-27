@@ -41,7 +41,7 @@ class Quizbrain {
       {
         Alert(
           context: context,
-          title: "RFLUTTER ALERT",
+          title: "Denzel's Quiz App",
           desc: "You reached the finish and your score is $score",
         ).show();
       }
