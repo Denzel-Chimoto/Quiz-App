@@ -1,6 +1,6 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
+import 'quizBrain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,15 +30,39 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scorekeeper = [];
-  List<String> questions = [
-    'You can lead a cow down stairs but not up stairs.',
-    'Approximately one quarter of human bones are in the feet.',
-    'A slug\'s blood is green'
-  ];
-
-  int x = 0;
-  List<bool> answers = [false, true, true];
   int total = 0;
+  int queTracker = 0;
+
+  //The following initializes a Quizbrain Object
+  Quizbrain quizzes = Quizbrain();
+
+  void checkAnswer(bool userPickedAnswer) {
+    bool correctAnswer = quizzes.getQuestionAnswer();
+    if (queTracker <= 3) {
+      if (correctAnswer == userPickedAnswer) {
+        setState(() {
+          total++;
+          scorekeeper.add(Icon(
+            Icons.check,
+            color: Colors.lightBlue,
+          ));
+        });
+      } else {
+        setState(() {
+          scorekeeper.add(Icon(
+            Icons.close,
+            color: Colors.red,
+          ));
+        });
+      }
+    } else {
+      // Trigger Alert Box
+      quizzes.nextQuestion(context);
+    }
+
+    quizzes.nextQuestion(context);
+    queTracker++;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +76,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                questions[x],
+                quizzes.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -76,25 +100,8 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool correctAnswer = answers[x];
-                if (correctAnswer == true) {
-                  total++;
-                  print(total);
-                } else {
-                  return;
-                }
-                setState(() {
-                  scorekeeper.add(
-                    Icon(
-                      Icons.check,
-                      color: Colors.greenAccent,
-                    ),
-                  );
-                  if (x > 2) {
-                  } else {
-                    x++;
-                  }
-                });
+                checkAnswer(true);
+
               },
             ),
           ),
@@ -112,24 +119,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool wrongAnswer = answers[x];
-                if (wrongAnswer == false) {
-                  total++;
-                  print(total);
-                } else {
-                }
-                setState(() {
-                  scorekeeper.add(
-                    Icon(
-                      Icons.close,
-                      color: Colors.redAccent,
-                    ),
-                  );
-                  if (x > 2) {
-                  } else {
-                    x++;
-                  }
-                });
+                checkAnswer(false);
               },
             ),
           ),
